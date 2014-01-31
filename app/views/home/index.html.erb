@@ -1,0 +1,29 @@
+<h2>Listing of your remote Xero's contacts</h2>
+
+<%if !session[:xero_auth] %>
+    <p>Your are not connect with your Xero's account</p>
+    <p><%= link_to 'Login with my Xero account', xero_session_new_path %></p>
+<%else%>
+
+    <table>
+      <thead>
+      <tr>
+        <th>Remote id</th>
+        <th>Name</th>
+        <th>Email address</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% @contacts.entries.each do |contact| %>
+          <tr>
+            <td><%= contact.id %></td>
+            <td><%= contact.name %></td>
+            <td><%= contact.email_address%></td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+
+    <p><%= link_to 'Log out', xero_session_destroy_path %></p>
+<%end%>
