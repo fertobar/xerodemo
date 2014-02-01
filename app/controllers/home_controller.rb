@@ -1,7 +1,7 @@
 class HomeController < ApplicationController
   def index
 
-    if session[:xero_auth]
+    if session[:xero_auth] && $xero_client
       @contacts = $xero_client.Contact.all(:order => 'Name')
     else
       @contacts = []
