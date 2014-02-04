@@ -1,4 +1,6 @@
 Xeroizerdemo::Application.routes.draw do
+  resources :contacts
+
   get "xero_session/new"
   get "xero_session/create"
   get "xero_session/destroy"
