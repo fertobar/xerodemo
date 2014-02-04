@@ -2,7 +2,13 @@ class HomeController < ApplicationController
   def index
 
     if session[:xero_auth] && $xero_client
-      @contacts = $xero_client.Contact.all(:order => 'Name')
+      begin
+        @contacts = $xero_client.Contact.all(:order => 'Name')
+      rescue
+        #expired session
+        session[:xero_auth] = nil
+        $xero_client = nil
+      end
     else
       @contacts = []
     end

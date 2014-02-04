@@ -4,13 +4,32 @@ class ContactsController < ApplicationController
   # GET /contacts
   # GET /contacts.json
   def index
-    #@contacts = Contact.all
+    @contacts = Contact.all
     if session[:xero_auth] && $xero_client
-      @contacts = $xero_client.Contact.all(:order => 'Name')
+      begin
+        @remote_contacts = $xero_client.Contact.all(:order => 'Name')
+      rescue
+        #expired session
+        session[:xero_auth] = nil
+        $xero_client = nil
+      end
     else
-      @contacts = []
+      @remote_contacts = []
     end
+  end
 
+  # GET /contacts
+  # GET /contacts.json
+  def synchronize
+    if session[:xero_auth] && $xero_client
+      Contact.synchronize($xero_client)
+    else
+      raise 'Not connection Found'
+    end
+    respond_to do |format|
+      format.html { redirect_to contacts_url }
+      format.json { head :no_content }
+    end
   end
 
   # GET /contacts/1
@@ -35,15 +54,15 @@ class ContactsController < ApplicationController
     respond_to do |format|
       if @contact.save
         if session[:xero_auth] && $xero_client
-        contact = $xero_client.Contact.build(:name => @contact.name)
-        contact.first_name = @contact.first_name
-        contact.last_name = @contact.last_name
-        contact.last_name = @contact.last_name
-        contact.email_address = @contact.email_address
-        #contact.add_address(:type => 'STREET', :line1 => '12 Testing Lane', :city => 'Brisbane')
-        #contact.add_phone(:type => 'DEFAULT', :area_code => '07', :number => '3033 1234')
-        #contact.add_phone(:type => 'MOBILE', :number => '0412 123 456')
-        contact.save
+          contact = $xero_client.Contact.build(:name => @contact.name)
+          contact.first_name = @contact.first_name
+          contact.last_name = @contact.last_name
+          contact.last_name = @contact.last_name
+          contact.email_address = @contact.email_address
+          #contact.add_address(:type => 'STREET', :line1 => '12 Testing Lane', :city => 'Brisbane')
+          #contact.add_phone(:type => 'DEFAULT', :area_code => '07', :number => '3033 1234')
+          #contact.add_phone(:type => 'MOBILE', :number => '0412 123 456')
+          contact.save
         end
         format.html { redirect_to @contact, notice: 'Contact was successfully created.' }
         format.json { render action: 'show', status: :created, location: @contact }
@@ -79,13 +98,13 @@ class ContactsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_contact
-      @contact = Contact.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_contact
+    @contact = Contact.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def contact_params
-      params.require(:contact).permit(:name, :first_name, :last_name, :email_address)
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def contact_params
+    params.require(:contact).permit(:name, :first_name, :last_name, :email_address)
+  end
 end

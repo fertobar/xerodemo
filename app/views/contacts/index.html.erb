@@ -1,4 +1,4 @@
-<h1>Listing contacts</h1>
+<h1>Listing Remote contacts</h1>
 
 <table>
   <thead>
@@ -7,6 +7,7 @@
       <th>First name</th>
       <th>Last name</th>
       <th>Email address</th>
+      <th>GUID</th>
       <th></th>
       <th></th>
       <th></th>
@@ -14,12 +15,13 @@
   </thead>
 
   <tbody>
-    <% @contacts.entries.each do |contact| %>
+    <% @remote_contacts.entries.each do |contact| %>
       <tr>
         <td><%= contact.name %></td>
         <td><%= contact.first_name %></td>
         <td><%= contact.last_name %></td>
         <td><%= contact.email_address %></td>
+        <td><%# %></td>
         <td><%# link_to 'Show', contact %></td>
         <td><%# link_to 'Edit', edit_contact_path(contact) %></td>
         <td><%# link_to 'Destroy', contact, method: :delete, data: { confirm: 'Are you sure?' } %></td>
@@ -30,4 +32,40 @@
 
 <br>
 
+<h1>Listing local contacts</h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>First name</th>
+    <th>Last name</th>
+    <th>Email address</th>
+    <th>GUID</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @contacts.entries.each do |contact| %>
+      <tr>
+        <td><%= contact.name %></td>
+        <td><%= contact.first_name %></td>
+        <td><%= contact.last_name %></td>
+        <td><%= contact.email_address %></td>
+        <td><%= contact.xero_uid %></td>
+        <td><%# link_to 'Show', contact %></td>
+        <td><%# link_to 'Edit', edit_contact_path(contact) %></td>
+        <td><%# link_to 'Destroy', contact, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<br>
+
 <%= link_to 'New Contact', new_contact_path %>
+<%= link_to 'Synchronize', synchronize_contacts_path %>
+
